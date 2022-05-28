@@ -4,7 +4,7 @@ from PyQt5.QtCore import QPoint, QRect
 from PyQt5.QtGui import QPainter, QColor, QBrush
 from PyQt5.QtWidgets import QStyleOptionGraphicsItem, QWidget
 
-from Essenses.SimulatingCell import SimulatingCell
+from src.Essenses.SimulatingCell import SimulatingCell
 
 
 class GrassCell(SimulatingCell):
