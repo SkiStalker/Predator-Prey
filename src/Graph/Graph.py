@@ -1,9 +1,7 @@
 import typing
 
-from PyQt5.QtGui import QPen, QBrush, QColor
-from pyqtgraph import PlotWidget, plot, mkPen
-from PyQt5.QtCore import QPoint, QRect
-import pyqtgraph as pg
+from pyqtgraph import PlotWidget,  mkPen
+from PyQt5.QtCore import QRect
 
 
 class Graph(PlotWidget):
@@ -20,7 +18,6 @@ class Graph(PlotWidget):
     def set_labels(self, left_label: str, bottom_label: str):
         self.setLabel('left', left_label)
         self.setLabel('bottom', bottom_label)
-
 
     def add_point(self, x: int, y: int):
         self._points_x.append(x)

@@ -1,10 +1,8 @@
 import math
-import typing
-
-from PyQt5.QtCore import QRect, QPoint, QRectF
-from PyQt5.QtGui import QPainter, QColor, QBrush
-from PyQt5.QtWidgets import QGraphicsRectItem, QWidget, QStyleOptionGraphicsItem
 from enum import Enum
+
+from PyQt5.QtCore import QPoint, QRectF
+from PyQt5.QtWidgets import QGraphicsRectItem
 
 
 class SimulatingCell(QGraphicsRectItem):

@@ -1,7 +1,6 @@
-import PyQt5
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QGraphicsView
-from PyQt5.QtCore import QPoint, QRect, QRectF, QTimer
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QPoint, QTimer
 
 from Graph.Graph import Graph
 from Scenes.SimulatingScene import SimulatingScene
@@ -10,7 +9,7 @@ from Scenes.SimulatingScene import SimulatingScene
 class PredatorPrey(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        uic.loadUi("src/Forms/PredatorPrey.ui", self)
+        uic.loadUi("Forms/PredatorPrey.ui", self)
         self.foxes_hares = Graph(self)
         self.foxes_hares.move(QPoint(565, 50))
         self.foxes_hares.set_labels('foxes', 'hares')
@@ -27,7 +26,7 @@ class PredatorPrey(QMainWindow):
 
         self.simulatingView.setScene(self.simulating_scene)
 
-        self.simulating_scene.generate_scene(5, 5)
+        self.simulating_scene.generate_scene(5, 10)
 
         self.simulation_timer = QTimer()
         self.cur_time = 0
@@ -35,7 +34,7 @@ class PredatorPrey(QMainWindow):
         self.update()
 
     def start_simulation(self):
-        self.simulation_timer.start(self.speedSpinBox.value() * 1000)
+        self.simulation_timer.start(1000 // self.speedSpinBox.value())
 
     def stop_simulation(self):
         self.simulation_timer.stop()

@@ -1,7 +1,7 @@
 import random
 from typing import List
 
-from PyQt5.QtCore import QRectF, QLineF, QPoint, QTimer
+from PyQt5.QtCore import QRectF, QLineF, QPoint
 from PyQt5.QtGui import QPen, QColor
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsLineItem, QGraphicsSceneMouseEvent, QMessageBox
 
@@ -30,6 +30,28 @@ class SimulatingScene(QGraphicsScene):
     def get_hares_count(self):
         return len(self.__hares)
 
+    def _reproduce_animal(self, animal: FoxCell | HareCell):
+        if isinstance(animal, FoxCell):
+            animal.reproduce()
+            for i in range(0, animal.reproduce_count()):
+                x = random.randint(0, 540)
+                y = random.randint(0, 540)
+                new_fox = FoxCell(QPoint(x - x % 20,
+                                         y - y % 20))
+                self.__foxes.append(new_fox)
+                self.addItem(new_fox)
+                print("Fox reproduced")
+        elif isinstance(animal, HareCell):
+            animal.reproduce()
+            for i in range(0, animal.reproduce_count()):
+                x = random.randint(0, 540)
+                y = random.randint(0, 540)
+                new_hare = HareCell(QPoint(x - x % 20,
+                                           y - y % 20))
+                self.__hares.append(new_hare)
+                self.addItem(new_hare)
+                print("Hare reproduced")
+
     def step_simulation(self):
         for fox in self.__foxes:
             fox.think(self.__hares, self.__water)
@@ -39,14 +61,7 @@ class SimulatingScene(QGraphicsScene):
                 print("Fox dead")
             else:
                 if fox.is_reproduced():
-                    fox.reproduce()
-                    x = random.randint(0, 540)
-                    y = random.randint(0, 540)
-                    new_fox = FoxCell(QPoint(x - x % 20,
-                                             y - y % 20))
-                    self.__foxes.append(new_fox)
-                    self.addItem(new_fox)
-                    print("Fox reproduced")
+                    self._reproduce_animal(fox)
                 if fox.is_ate():
                     hare = fox.eaten_object()
                     fox.eat()
@@ -55,21 +70,15 @@ class SimulatingScene(QGraphicsScene):
                     print("Hare eat")
 
         for hare in self.__hares:
-            hare.think(self.__grass, self.__water)
+            hare.think(self.__grass, self.__water, self.__foxes)
             if hare.is_dead():
                 self.__hares.remove(hare)
                 self.removeItem(hare)
                 print("Hare dead")
+
             else:
                 if hare.is_reproduced():
-                    hare.reproduce()
-                    x = random.randint(0, 540)
-                    y = random.randint(0, 540)
-                    new_hare = HareCell(QPoint(x - x % 20,
-                                               y - y % 20))
-                    self.__hares.append(new_hare)
-                    self.addItem(new_hare)
-                    print("Hare reproduced")
+                    self._reproduce_animal(hare)
                 if hare.is_ate():
                     grass = hare.eaten_object()
                     hare.eat()
@@ -82,19 +91,18 @@ class SimulatingScene(QGraphicsScene):
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         click_pos = event.scenePos()
         items = self.items(click_pos)
-        find = SimulatingCell()
         for item in items:
             if isinstance(item, SimulatingCell):
                 if isinstance(item, HareCell):
                     QMessageBox.information(None, "Hare info",
-                                            f"Hungry : {item.hunger}\n" +
-                                            f"Thirst : {item.thirst}\n" +
+                                            f"Hungry : {int(item.hunger)}\n" +
+                                            f"Thirst : {int(item.thirst)}\n" +
                                             f"Target : {item.get_target_type()}"
                                             )
                 elif isinstance(item, FoxCell):
                     QMessageBox.information(None, "Fox info",
-                                            f"Hungry : {item.hunger}\n" +
-                                            f"Thirst : {item.thirst}\n" +
+                                            f"Hungry : {int(item.hunger)}\n" +
+                                            f"Thirst : {int(item.thirst)}\n" +
                                             f"Target : {item.get_target_type()}"
                                             )
                 break
@@ -107,7 +115,6 @@ class SimulatingScene(QGraphicsScene):
 
         for i in range(0, 560 // 20):
             for j in range(0, 560 // 20):
-                res = 0
                 if len(self.__foxes) == 0:
                     res = 1
                 elif len(self.__hares) == 0:
@@ -118,6 +125,9 @@ class SimulatingScene(QGraphicsScene):
                     res = 4
                 else:
                     res = random.randint(0, 4)
+                    # if res == 2 and i < 10:
+                    #     while res == 2:
+                    #         res = random.randint(0, 4)
 
                 _i = i * 20
                 _j = j * 20
@@ -130,7 +140,7 @@ class SimulatingScene(QGraphicsScene):
                         self.__foxes.append(new_fox)
                         self.addItem(new_fox)
                 elif res == 2:
-                    if len(self.__hares) < hares_count and j > 4:
+                    if len(self.__hares) < hares_count:
                         new_hare = HareCell(QPoint(_i, _j))
                         self.__hares.append(new_hare)
                         self.addItem(new_hare)
